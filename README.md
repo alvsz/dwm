@@ -1,2 +1,3 @@
 # dwm-polybar
-minha configuração do dwm usando polybar
+
+todos os patches utilizados estão em /patches/
