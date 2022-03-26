@@ -14,16 +14,16 @@ static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
 static const char *alttrayname      = "tray";    /* Polybar tray instance name */
 static const char *altbarcmd        = "/home/mamba/.config/polybar/bar.sh"; /* Alternate bar launch command */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const int vertpad            = 10;       /* vertical padding of bar */
-static const int sidepad            = 10;       /* horizontal padding of bar */
-static const char *fonts[]          = { "Cantarell:size=13", "Iosevka:size=14", "Material-Design-Iconic-Font:size=14", "Font Awesome:size=14" };
+static const int vertpad            = 0;       /* vertical padding of bar */
+static const int sidepad            = 0;       /* horizontal padding of bar */
+static const char *fonts[]          = { "Cantarell:size=13", "Iosevka:size=14", "Font Awesome:size=14" };
 static const char dmenufont[]       = "Cantarell:size=13";
 
 #include "/home/mamba/.cache/wal/colors-wal-dwm.h"
 #include <X11/XF86keysym.h>
 
 /* tagging */
-static const char *tags[] = { "1", "  ", "  ", "  ", "5", "  " };
+static const char *tags[] = { "    ", "    ", "    ", "    ", "    ", "    " };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -48,7 +48,7 @@ static const Layout layouts[] = {
 	/* symbol     arrange function */
 	{ "  ",      tile },    /* first entry is default */
 	{ "  ",      monocle },
-	{ "[@]",      spiral },
+	{ "  ",      spiral },
 	{ "[\\]",     dwindle },
 	{ "H[]",      deck },
 	{ "TTT",      bstack },
@@ -59,7 +59,7 @@ static const Layout layouts[] = {
 	{ ":::",      gaplessgrid },
 	{ "|M|",      centeredmaster },
 	{ ">M>",      centeredfloatingmaster },
-	{ "  ",      NULL },    /* no layout function means floating behavior */
+	{ "  ",      NULL },    /* no layout function means floating behavior */
 	{ NULL,       NULL },
 };
 
@@ -109,20 +109,20 @@ static Key keys[] = {
 	{ MODKEY,                       XK_equal,      incrgaps,       {.i = -1 } },
 	{ MODKEY,                       XK_minus,      incrgaps,       {.i = +1 } },
 	
-	{ MODKEY|Mod4Mask,              XK_i,      incrigaps,      {.i = +1 } },
-	{ MODKEY|Mod4Mask|ShiftMask,    XK_i,      incrigaps,      {.i = -1 } },
-	{ MODKEY|Mod4Mask,              XK_o,      incrogaps,      {.i = +1 } },
-	{ MODKEY|Mod4Mask|ShiftMask,    XK_o,      incrogaps,      {.i = -1 } },
+	{ MODKEY|Mod1Mask,              XK_i,      incrigaps,      {.i = +1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_i,      incrigaps,      {.i = -1 } },
+	{ MODKEY|Mod1Mask,              XK_o,      incrogaps,      {.i = +1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_o,      incrogaps,      {.i = -1 } },
 	
-	{ MODKEY|Mod4Mask,              XK_6,      incrihgaps,     {.i = +1 } },
-	{ MODKEY|Mod4Mask|ShiftMask,    XK_6,      incrihgaps,     {.i = -1 } },
-	{ MODKEY|Mod4Mask,              XK_7,      incrivgaps,     {.i = +1 } },
-	{ MODKEY|Mod4Mask|ShiftMask,    XK_7,      incrivgaps,     {.i = -1 } },
+	{ MODKEY|Mod1Mask,              XK_6,      incrihgaps,     {.i = +1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_6,      incrihgaps,     {.i = -1 } },
+	{ MODKEY|Mod1Mask,              XK_7,      incrivgaps,     {.i = +1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_7,      incrivgaps,     {.i = -1 } },
 	
-	{ MODKEY|Mod4Mask,              XK_8,      incrohgaps,     {.i = +1 } },
-	{ MODKEY|Mod4Mask|ShiftMask,    XK_8,      incrohgaps,     {.i = -1 } },
-	{ MODKEY|Mod4Mask,              XK_9,      incrovgaps,     {.i = +1 } },
-	{ MODKEY|Mod4Mask|ShiftMask,    XK_9,      incrovgaps,     {.i = -1 } },
+	{ MODKEY|Mod1Mask,              XK_8,      incrohgaps,     {.i = +1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_8,      incrohgaps,     {.i = -1 } },
+	{ MODKEY|Mod1Mask,              XK_9,      incrovgaps,     {.i = +1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_9,      incrovgaps,     {.i = -1 } },
 	
 	{ MODKEY|ShiftMask,             XK_equal,      togglegaps,     {0} },
 	{ MODKEY|ShiftMask,             XK_minus,      defaultgaps,    {0} },
