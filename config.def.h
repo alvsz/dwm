@@ -7,11 +7,10 @@ static const unsigned int gappih    = 10;       /* horiz inner gap between windo
 static const unsigned int gappiv    = 10;       /* vert inner gap between windows */
 static const unsigned int gappoh    = 10;       /* horiz outer gap between windows and screen edge */
 static const unsigned int gappov    = 10;       /* vert outer gap between windows and screen edge */
-static       int smartgaps          = 1;        /* 1 means no outer gap when there is only one window */
+static       int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int usealtbar          = 1;        /* 1 means use non-dwm status bar */
 static const char *altbarclass      = "Polybar"; /* Alternate bar class name */
-static const char *alttrayname      = "tray";    /* Polybar tray instance name */
 static const char *altbarcmd        = "/home/mamba/.config/polybar/bar.sh"; /* Alternate bar launch command */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int vertpad            = 0;       /* vertical padding of bar */
@@ -23,7 +22,7 @@ static const char dmenufont[]       = "Cantarell:size=13";
 #include <X11/XF86keysym.h>
 
 /* tagging */
-static const char *tags[] = { "    ", "    ", "    ", "    ", "    ", "    " };
+static const char *tags[] = { "", "", "", "", "", "" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -76,18 +75,25 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[]     = { "dmenu_run_i", "-l", "7", "-g", "2", "-h", "30", "-bw", "5", "-fn", dmenufont, "-p", "Executar: ", "-sb", sel_bg, "-sf", sel_fg, NULL };
-static const char *clipmenucmd[]  = { "clipmenu", "-l", "7", "-g", "2", "-h", "40", "-bw", "5", "-i", "-fn", dmenufont, "-sb", sel_bg, "-sf", sel_fg, NULL };
-static const char *termcmd[]      = { "st", NULL };
-static const char *stop[]         = { "playerctl", "stop", NULL };
-static const char *previous[]     = { "playerctl", "previous", NULL };
-static const char *playpause[]    = { "playerctl", "play-pause", NULL };
-static const char *next[]         = { "playerctl", "next", NULL };
+static const char *dmenucmd[]          = { "dmenu_run_i", "-i", "-l", "7", "-g", "2", "-h", "30", "-bw", "5", "-fn", dmenufont, "-p", "Executar: ", "-sb", sel_bg, "-sf", sel_fg, NULL };
+static const char *clipmenucmd[]       = { "clipmenu",    "-i", "-l", "7", "-g", "2", "-h", "40", "-bw", "5", "-i", "-fn", dmenufont, "-sb", sel_bg, "-sf", sel_fg, NULL };
+static const char *termcmd[]           = { "st", NULL };
 
-static const char *music[]        = { "dev.alextren.Spot", NULL };
-static const char *downvol[]      = { "pactl", "set-sink-volume", "0", "-5%",     NULL };
-static const char *upvol[]        = { "pactl", "set-sink-volume", "0", "+5%",     NULL };
-static const char *mutevol[]      = { "pactl", "set-sink-mute",   "0", "toggle",  NULL };
+static const char *stop[]              = { "playerctl", "stop", NULL };
+static const char *previous[]          = { "playerctl", "previous", NULL };
+static const char *playpause[]         = { "playerctl", "play-pause", NULL };
+static const char *next[]              = { "playerctl", "next", NULL };
+
+static const char *music[]             = { "dev.alextren.Spot", NULL };
+static const char *downvol[]           = { "pactl", "set-sink-volume", "0", "-5%",     NULL };
+static const char *upvol[]             = { "pactl", "set-sink-volume", "0", "+5%",     NULL };
+static const char *mutevol[]           = { "pactl", "set-sink-mute",   "0", "toggle",  NULL };
+
+static const char *printcis[]          = { "gnome-screenshot", NULL };
+static const char *printtrans[]        = { "gnome-screenshot", "-c", NULL };
+static const char *printareacis[]      = { "gnome-screenshot", "-a", NULL };
+static const char *printareatrans[]    = { "gnome-screenshot", "-a", "-c", NULL };
+static const char *printgui[]          = { "gnome-screenshot", "-i", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -157,6 +163,11 @@ static Key keys[] = {
 	{ 0,                            XF86XK_AudioPlay,           spawn,          {.v = playpause } },
 	{ 0,                            XF86XK_AudioPrev,           spawn,          {.v = previous } },
 	{ 0,                            XF86XK_AudioStop,           spawn,          {.v = stop } }, 
+	{ 0,                            XK_Print,                   spawn,          {.v = printcis } },
+	{ ControlMask,                  XK_Print,                   spawn,          {.v = printtrans } },
+	{ ShiftMask,                    XK_Print,                   spawn,          {.v = printareacis } },
+	{ ShiftMask|ControlMask,        XK_Print,                   spawn,          {.v = printareatrans } },
+	{ MODKEY,                       XK_Print,                   spawn,          {.v = printgui } },
 };
 
 /* button definitions */

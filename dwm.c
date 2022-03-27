@@ -133,7 +133,6 @@ struct Monitor {
 	int nmaster;
 	int num;
 	int by, bh;           /* bar geometry */
-	int tx, tw;           /* bar tray geometry */
 	int mx, my, mw, mh;   /* screen size */
 	int wx, wy, ww, wh;   /* window area  */
 	int gappih;           /* horizontal gap between windows */
@@ -152,7 +151,6 @@ struct Monitor {
 	Client *stack;
 	Monitor *next;
 	Window barwin;
-	Window traywin;
 	const Layout *lt[2];
 	const Layout *lastlt;
 };
@@ -208,7 +206,6 @@ static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
 static void managealtbar(Window win, XWindowAttributes *wa);
-static void managetray(Window win, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
 static void monocle(Monitor *m);
@@ -225,9 +222,7 @@ static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
 static void rotatestack(const Arg *arg);
 static void run(void);
-static void runAutostart(void);
 static void scan(void);
-static void scantray(void);
 static int sendevent(Client *c, Atom proto);
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
@@ -254,7 +249,6 @@ static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void unmanagealtbar(Window w);
-static void unmanagetray(Window w);
 static void unmapnotify(XEvent *e);
 static void updatebarpos(Monitor *m);
 static void updatebars(void);
@@ -282,8 +276,6 @@ static int screen;
 static int sw, sh;           /* X display screen geometry width, height */
 static int bh, blw = 0;      /* bar geometry */
 static int lrpad;            /* sum of left and right padding for text */
-static int vp;               /* vertical padding for bar */
-static int sp;               /* side padding for bar */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
 static void (*handler[LASTEvent]) (XEvent *) = {
@@ -630,7 +622,7 @@ configurenotify(XEvent *e)
 				for (c = m->clients; c; c = c->next)
 					if (c->isfullscreen)
 						resizeclient(c, m->mx, m->my, m->mw, m->mh);
-				XMoveResizeWindow(dpy, m->barwin, m->wx + sp, m->by + vp, m->ww -  2 * sp, m->bh);
+				XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, m->bh);
 			}
 			focus(NULL);
 			arrange(NULL);
@@ -701,11 +693,11 @@ createmon(void)
 	m->nmaster = nmaster;
 	m->showbar = showbar;
 	m->topbar = topbar;
+	m->bh = bh;
 	m->gappih = gappih;
 	m->gappiv = gappiv;
 	m->gappoh = gappoh;
 	m->gappov = gappov;
-	m->bh = bh;
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
 	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
@@ -723,8 +715,6 @@ destroynotify(XEvent *e)
 		unmanage(c, 1);
 	else if ((m = wintomon(ev->window)) && m->barwin == ev->window)
 		unmanagealtbar(ev->window);
-	else if (m->traywin == ev->window)
-		unmanagetray(ev->window);
 }
 
 void
@@ -784,7 +774,7 @@ drawbar(Monitor *m)
 	if (m == selmon) { /* status is only drawn on selected monitor */
 		drw_setscheme(drw, scheme[SchemeNorm]);
 		tw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
-		drw_text(drw, m->ww - tw - 2 * sp, 0, tw, bh, 0, stext, 0);
+		drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
 	}
 
 	for (c = m->clients; c; c = c->next) {
@@ -810,12 +800,12 @@ drawbar(Monitor *m)
 	if ((w = m->ww - tw - x) > bh) {
 		if (m->sel) {
 			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
-			drw_text(drw, x, 0, w - 2 * sp, bh, lrpad / 2, m->sel->name, 0);
+			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
 			if (m->sel->isfloating)
 				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
 		} else {
 			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_rect(drw, x, 0, w - 2 * sp, bh, 1, 1);
+			drw_rect(drw, x, 0, w, bh, 1, 1);
 		}
 	}
 	drw_map(drw, m->barwin, 0, 0, m->ww, bh);
@@ -1216,26 +1206,6 @@ managealtbar(Window win, XWindowAttributes *wa)
 }
 
 void
-managetray(Window win, XWindowAttributes *wa)
-{
-	Monitor *m;
-	if (!(m = recttomon(wa->x, wa->y, wa->width, wa->height)))
-		return;
-
-	m->traywin = win;
-	m->tx = wa->x;
-	m->tw = wa->width;
-	updatebarpos(m);
-	arrange(m);
-	XSelectInput(dpy, win, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
-	XMoveResizeWindow(dpy, win, wa->x, wa->y, wa->width, wa->height);
-	XMapWindow(dpy, win);
-	XChangeProperty(dpy, root, netatom[NetClientList], XA_WINDOW, 32, PropModeAppend,
-			(unsigned char *) &win, 1);
-}
-
-
-void
 mappingnotify(XEvent *e)
 {
 	XMappingEvent *ev = &e->xmapping;
@@ -1603,12 +1573,6 @@ run(void)
 }
 
 void
-runAutostart(void) {
-	system("cd ~/.dwm; ./autostart_blocking.sh");
-	system("cd ~/.dwm; ./autostart.sh &");
-}
-
-void
 scan(void)
 {
 	unsigned int i, num;
@@ -1636,29 +1600,6 @@ scan(void)
 			XFree(wins);
 	}
 }
-
-void
-scantray(void)
-{
-	unsigned int num;
-	Window d1, d2, *wins = NULL;
-	XWindowAttributes wa;
-
-	if (XQueryTree(dpy, root, &d1, &d2, &wins, &num)) {
-		for (unsigned int i = 0; i < num; i++) {
-			if (wmclasscontains(wins[i], altbarclass, alttrayname)) {
-				if (!XGetWindowAttributes(dpy, wins[i], &wa))
-					break;
-				managetray(wins[i], &wa);
-			}
-		}
-	}
-
-	if (wins)
-		XFree(wins);
-}
-
-
 
 void
 sendmon(Client *c, Monitor *m)
@@ -1814,10 +1755,7 @@ setup(void)
 		die("no fonts could be loaded.");
 	lrpad = drw->fonts->h;
 	bh = usealtbar ? 0 : drw->fonts->h + 2;
-	sp = sidepad;
-	vp = (topbar == 1) ? vertpad : - vertpad;
 	updategeom();
-
 	/* init atoms */
 	utf8string = XInternAtom(dpy, "UTF8_STRING", False);
 	wmatom[WMProtocols] = XInternAtom(dpy, "WM_PROTOCOLS", False);
@@ -1995,18 +1933,9 @@ tagmon(const Arg *arg)
 void
 togglebar(const Arg *arg)
 {
-	/**
-     * Polybar tray does not raise maprequest event. It must be manually scanned
-	 * for. Scanning it too early while the tray is being populated would give
-	 * wrong dimensions.
-     */
-	if (!selmon->traywin)
-		scantray();
-
 	selmon->showbar = !selmon->showbar;
 	updatebarpos(selmon);
-	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx + sp, selmon->by + vp, selmon->ww - 2 * sp, selmon->bh);
-+	XMoveResizeWindow(dpy, selmon->traywin, selmon->tx, selmon->by, selmon->tw, selmon->bh);
+	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, selmon->bh);
 	arrange(selmon);
 }
 
@@ -2105,21 +2034,6 @@ unmanagealtbar(Window w)
 }
 
 void
-unmanagetray(Window w)
-{
-	Monitor *m = wintomon(w);
-
-	if (!m)
-		return;
-
-	m->traywin = 0;
-	m->tx = 0;
-	m->tw = 0;
-	updatebarpos(m);
-	arrange(m);
-}
-
-void
 unmapnotify(XEvent *e)
 {
 	Client *c;
@@ -2133,8 +2047,6 @@ unmapnotify(XEvent *e)
 			unmanage(c, 0);
 	} else if ((m = wintomon(ev->window)) && m->barwin == ev->window)
 		unmanagealtbar(ev->window);
-	else if (m->traywin == ev->window)
-		unmanagetray(ev->window);
 }
 
 void
@@ -2153,7 +2065,7 @@ updatebars(void)
 	for (m = mons; m; m = m->next) {
 		if (m->barwin)
 			continue;
-		m->barwin = XCreateWindow(dpy, root, m->wx + sp, m->by + vp, m->ww - 2 * sp, bh, 0, DefaultDepth(dpy, screen),
+		m->barwin = XCreateWindow(dpy, root, m->wx, m->by, m->ww, bh, 0, DefaultDepth(dpy, screen),
 				CopyFromParent, DefaultVisual(dpy, screen),
 				CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
 		XDefineCursor(dpy, m->barwin, cursor[CurNormal]->cursor);
@@ -2168,11 +2080,11 @@ updatebarpos(Monitor *m)
 	m->wy = m->my;
 	m->wh = m->mh;
 	if (m->showbar) {
-		m->wh = m->wh - vertpad - m->bh;
-		m->by = m->topbar ? m->wy : m->wy + m->wh + vertpad;
-		m->wy = m->topbar ? m->wy + m->bh + vp : m->wy;
+		m->wh -= m->bh;
+		m->by = m->topbar ? m->wy : m->wy + m->wh;
+		m->wy = m->topbar ? m->wy + m->bh : m->wy;
 	} else
-		m->by = -m->bh - vp;
+		m->by = -m->bh;
 }
 
 void
@@ -2417,7 +2329,7 @@ wintomon(Window w)
 	if (w == root && getrootptr(&x, &y))
 		return recttomon(x, y, 1, 1);
 	for (m = mons; m; m = m->next)
-		if (w == m->barwin || w == m->traywin)
+		if (w == m->barwin)
 			return m;
 	if ((c = wintoclient(w)))
 		return c->mon;
@@ -2514,7 +2426,6 @@ main(int argc, char *argv[])
 		die("pledge");
 #endif /* __OpenBSD__ */
 	scan();
-	runAutostart();
 	run();
 	if(restart) execvp(argv[0], argv);
 	cleanup();
