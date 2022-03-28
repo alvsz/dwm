@@ -76,7 +76,7 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]          = { "dmenu_run_i", "-i", "-l", "7", "-g", "2", "-h", "30", "-bw", "5", "-fn", dmenufont, "-p", "Executar: ", "-sb", sel_bg, "-sf", sel_fg, NULL };
-static const char *clipmenucmd[]       = { "clipmenu",    "-i", "-l", "7", "-g", "2", "-h", "40", "-bw", "5", "-i", "-fn", dmenufont, "-sb", sel_bg, "-sf", sel_fg, NULL };
+static const char *clipmenucmd[]       = { "clipmenu",    "-i", "-l", "7", "-g", "2", "-h", "40", "-bw", "5", "-fn", dmenufont, "-sb", sel_bg, "-sf", sel_fg, NULL };
 static const char *termcmd[]           = { "st", NULL };
 
 static const char *stop[]              = { "playerctl", "stop", NULL };
