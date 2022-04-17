@@ -3,10 +3,10 @@
 todos os patches utilizados estão em /patches/
 
 ## atalhos do teclado
-- Super+D > [lançador](https://github.com/alvsz/dmenu-alvsz)
+- Super+d > [lançador](https://github.com/alvsz/dmenu-alvsz)
 - Super+Shift+Enter > [terminal](https://github.com/alvsz/st-alvsz)
-- Super+V > gerenciar [área de transferência](https://github.com/cdown/clipmenu)
-- Super+B > habilitar barra superior
+- Super+v > gerenciar [área de transferência](https://github.com/cdown/clipmenu)
+- Super+p > habilitar barra superior
 - Super+Setas 
 - - direita/esquerta > mudar janela em foco
 - - cima/baixo > coloca a janela em foco no master
@@ -14,9 +14,7 @@ todos os patches utilizados estão em /patches/
 - - esquerda/direita > altera o tamanho do master
 - - cima/baixo >  altera a quantidade de janelas no master
 - Super+q > fecha a janela ativa
-- Super+t > janelas em tiling
-- Super+f > janelas flutuando
-- Super+m > maximiza a janela ativa
+- Super+b/n/m > muda a disposição das janelas
 - Super+Tab > muda para o próximo tag
 - Super+print > abre a interface do gnome-screenshot
 - Print > salva o print da tela em ~/Imagens
