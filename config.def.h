@@ -41,9 +41,11 @@ static const Rule rules[] = {
 	{ "Gimp",                           NULL,            NULL,                 1 << 2,       0,           -1 },
 	{ "Org.gnome.Nautilus",             NULL,            NULL,                 1 << 3,       0,           -1 },
 	{ "Geary",                          NULL,            NULL,                 1 << 4,       0,           -1 },
+	{ "discord",                        NULL,            NULL,                 1 << 4,       0,           -1 },
 	{ "Lutris",                         NULL,            NULL,                 1 << 5,       0,           -1 },
 	{ "Steam",                          NULL,            NULL,                 1 << 5,       0,           -1 },
 	{ "Steam",                          NULL,            "Lista de amigos",    1 << 5,       1,           -1 },
+	{ "Steam",                          NULL,            "Steam — Novidades",  1 << 5,       1,           -1 },
 	{ "Rare",                           NULL,            NULL,                 1 << 5,       0,           -1 },
 };
 
@@ -58,9 +60,10 @@ static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen win
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "[M]",      monocle },
 	{ "",        spiral },
+	{ "|M|",      centeredmaster },
+	{ "",        NULL },    /* no layout function means floating behavior */
+	{ "[M]",      monocle },
 	{ "[\\]",     dwindle },
 	{ "H[]",      deck },
 	{ "TTT",      bstack },
@@ -69,10 +72,8 @@ static const Layout layouts[] = {
 	{ "###",      nrowgrid },
 	{ "---",      horizgrid },
 	{ ":::",      gaplessgrid },
-	{ "|M|",      centeredmaster },
+	{ "[]=",      tile },    /* first entry is default */
 	{ ">M>",      centeredfloatingmaster },
-	{ "",        NULL },    /* no layout function means floating behavior */
-//	{ NULL,       NULL },    
 };
 
 /* key definitions */
@@ -89,7 +90,7 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[]          = { "dmenu_run_i", "-i", "-l", "7", "-g", "2", "-h", "30", "-bw", "5", "-fn", dmenufont, "-p", "Executar:⠀", "-sb", sel_bg, "-sf", sel_fg, NULL };
-static const char *clipmenucmd[]       = { "clipmenu",    "-i", "-l", "7", "-g", "2", "-h", "40", "-bw", "5", "-i", "-fn", dmenufont, "-sb", sel_bg, "-sf", sel_fg, NULL };
+static const char *clipmenucmd[]       = { "clipmenu",    "-i", "-l", "7", "-g", "2", "-h", "30", "-bw", "5", "-i", "-fn", dmenufont, "-sb", sel_bg, "-sf", sel_fg, NULL };
 static const char *termcmd[]           = { "st", NULL };
 
 static const char *stop[]              = { "playerctl", "stop", NULL };
@@ -113,7 +114,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_d,                       spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return,                  spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_v,                       spawn,          {.v = clipmenucmd } },
-	{ MODKEY,                       XK_b,                       togglebar,      {0} },
+	{ MODKEY,                       XK_p,                       togglebar,      {0} },
 	{ MODKEY,                       XK_Up,                      rotatestack,    {.i = +1 } },
 	{ MODKEY,                       XK_Down,                    rotatestack,    {.i = -1 } },
 	{ MODKEY,                       XK_Right,                   focusstack,     {.i = +1 } },
@@ -148,9 +149,9 @@ static Key keys[] = {
 
 	{ MODKEY,                       XK_Tab,                     view,           {0} },
 	{ MODKEY,                       XK_q,                       killclient,     {0} },
-	{ MODKEY,                       XK_t,                       setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,                       setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_m,                       setlayout,      {.v = &layouts[2]} },
+	{ MODKEY,                       XK_m,                       setlayout,      {.v = &layouts[0]} },
+	{ MODKEY,                       XK_n,                       setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                       XK_b,                       setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_space,                   setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,                   togglefloating, {0} },
 	{ MODKEY,                       XK_0,                       view,           {.ui = ~0 } },
@@ -174,7 +175,7 @@ static Key keys[] = {
 	{ 0,                            XF86XK_AudioNext,           spawn,          {.v = next } },
 	{ 0,                            XF86XK_AudioPlay,           spawn,          {.v = playpause } },
 	{ 0,                            XF86XK_AudioPrev,           spawn,          {.v = previous } },
-	{ 0,                            XF86XK_AudioStop,           spawn,          {.v = stop } }, 
+	{ 0,                            XF86XK_AudioStop,           spawn,          {.v = stop } },
 	{ 0,                            XK_Print,                   spawn,          {.v = printcis } },
 	{ ControlMask,                  XK_Print,                   spawn,          {.v = printtrans } },
 	{ ShiftMask,                    XK_Print,                   spawn,          {.v = printareacis } },
