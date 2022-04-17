@@ -3,8 +3,8 @@
 todos os patches utilizados estão em /patches/
 
 ## atalhos do teclado
-- Super+d > [lançador](https://github.com/alvsz/dmenu-alvsz)
-- Super+Shift+Enter > [terminal](https://github.com/alvsz/st-alvsz)
+- Super+d > [lançador](https://github.com/alvsz/dmenu)
+- Super+Shift+Enter > [terminal](https://github.com/alvsz/st)
 - Super+v > gerenciar [área de transferência](https://github.com/cdown/clipmenu)
 - Super+p > habilitar barra superior
 - Super+Setas 
