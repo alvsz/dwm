@@ -22,6 +22,9 @@ todos os patches utilizados estão em /patches/
 - - cima/baixo >  altera a quantidade de janelas no master
 - Super+q > fecha a janela ativa
 - Super+b/n/m > muda a disposição das janelas
+- Super+-/= > muda o tamanho do espaço entre as janelas
+- Super+shift+- > volta o espaço entre as janelas para o valor padrão
+- Super+shift+= > desabilita o espaço entre as janelas
 - Super+Tab > muda para o próximo tag
 - Alt+tab > muda a janela em foco
 - Super+t > abre o terminal
