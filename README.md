@@ -7,8 +7,11 @@ todos os patches utilizados estão em /patches/
 - Super+Shift+Enter > [terminal](https://github.com/alvsz/st)
 - Super+v > gerenciador de [área de transferência](https://github.com/cdown/clipmenu)
 - Super+p > habilitar barra superior
-- Super+1-6 > muda a tag ativa
-- Super+shift+1-6 > move a janela ativa para outra tag
+- Super+número da tag
+- - > muda a tag ativa
+- - +control > habilita mais de uma tag
+- - +shift > envia a janela ativa para outra tag
+- - +shift+control > habilita a janela ativa em mais de uma tag
 - Super+0 > ativa todas as tags
 - Super+shift+0 > coloca a janela ativa em todas as tags
 - Super+Setas 
