@@ -5,8 +5,12 @@ todos os patches utilizados estão em /patches/
 ## atalhos do teclado
 - Super+d > [lançador](https://github.com/alvsz/dmenu)
 - Super+Shift+Enter > [terminal](https://github.com/alvsz/st)
-- Super+v > gerenciar [área de transferência](https://github.com/cdown/clipmenu)
+- Super+v > gerenciador de [área de transferência](https://github.com/cdown/clipmenu)
 - Super+p > habilitar barra superior
+- Super+1-6 > muda a tag ativa
+- Super+shift+1-6 > move a janela ativa para outra tag
+- Super+0 > ativa todas as tags
+- Super+shift+0 > coloca a janela ativa em todas as tags
 - Super+Setas 
 - - direita/esquerta > mudar janela em foco
 - - cima/baixo > coloca a janela em foco no master
@@ -16,6 +20,11 @@ todos os patches utilizados estão em /patches/
 - Super+q > fecha a janela ativa
 - Super+b/n/m > muda a disposição das janelas
 - Super+Tab > muda para o próximo tag
+- Alt+tab > muda a janela em foco
+- Super+t > abre o terminal
+- Super+f > abre o nautilus
+- Super+b > abre o firefox
+- Super+e > abre o geary em flatpak
 - Super+print > abre a interface do gnome-screenshot
 - Print > salva o print da tela em ~/Imagens
 - Control+print > salva o print da tela na área de transferência
