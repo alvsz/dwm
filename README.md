@@ -8,7 +8,7 @@ todos os patches utilizados estão em /patches/
 - Super+v > gerenciador de [área de transferência](https://github.com/cdown/clipmenu)
 - Super+p > habilitar barra superior
 - Super+número da tag
-- - > muda a tag ativa
+- - muda a tag ativa
 - - +control > habilita mais de uma tag
 - - +shift > envia a janela ativa para outra tag
 - - +shift+control > habilita a janela ativa em mais de uma tag
