@@ -31,6 +31,7 @@ static const Rule rules[] = {
 	 */
 	/* class                            instance         title                 tags mask     isfloating   monitor */
 	{ "Pwcalculator",                   NULL,            NULL,                 0,            1,           -1 },
+	{ "Qalculate-gtk",                  NULL,            NULL,                 0,            1,           -1 },
 	{ "st-256color",                    NULL,            NULL,                 1,            0,           -1 },
 	{ "firefox",                        NULL,            NULL,                 1 << 1,       0,           -1 },
 	{ "librewolf",                      NULL,            NULL,                 1 << 1,       0,           -1 },
@@ -93,15 +94,20 @@ static const char *dmenucmd[]          = { "dmenu_run_i", "-i", "-l", "7", "-g",
 static const char *clipmenucmd[]       = { "clipmenu",    "-i", "-l", "7", "-g", "2", "-h", "30", "-bw", "5", "-i", "-fn", dmenufont, "-sb", sel_bg, "-sf", sel_fg, NULL };
 static const char *termcmd[]           = { "st", NULL };
 
-static const char *stop[]              = { "playerctl", "stop", NULL };
-static const char *previous[]          = { "playerctl", "previous", NULL };
-static const char *playpause[]         = { "playerctl", "play-pause", NULL };
-static const char *next[]              = { "playerctl", "next", NULL };
+static const char *audiostop[]         = { "playerctl", "stop", NULL };
+static const char *audioprev[]         = { "playerctl", "previous", NULL };
+static const char *audioplay[]         = { "playerctl", "play-pause", NULL };
+static const char *audionext[]         = { "playerctl", "next", NULL };
 
-static const char *music[]             = { "dev.alextren.Spot", NULL };
-static const char *downvol[]           = { "pactl", "set-sink-volume", "0", "-5%",     NULL };
-static const char *upvol[]             = { "pactl", "set-sink-volume", "0", "+5%",     NULL };
-static const char *mutevol[]           = { "pactl", "set-sink-mute",   "0", "toggle",  NULL };
+static const char *explorer[]          = { "nautilus", NULL };
+static const char *homepage[]          = { "firefox", NULL };
+static const char *mail[]              = { "org.gnome.Geary", NULL };
+static const char *calculator[]        = { "io.github.Qalculate", NULL };
+
+static const char *tools[]             = { "dev.alextren.Spot", NULL };
+static const char *audiolowervolume[]  = { "pactl", "set-sink-volume", "0", "-5%",     NULL };
+static const char *audioraisevolume[]  = { "pactl", "set-sink-volume", "0", "+5%",     NULL };
+static const char *audiomute[]         = { "pactl", "set-sink-mute",   "0", "toggle",  NULL };
 
 static const char *printcis[]          = { "gnome-screenshot", NULL };
 static const char *printtrans[]        = { "gnome-screenshot", "-c", NULL };
@@ -113,7 +119,36 @@ static Key keys[] = {
 	/* modifier                     key                         function        argument */
 	{ MODKEY,                       XK_d,                       spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return,                  spawn,          {.v = termcmd } },
+	{ MODKEY,                       XK_t,                       spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_v,                       spawn,          {.v = clipmenucmd } },
+	
+	{ 0,                            XF86XK_AudioStop,           spawn,          {.v = audiostop } },
+	{ 0,                            XF86XK_AudioPrev,           spawn,          {.v = audioprev } },
+	{ 0,                            XF86XK_AudioPlay,           spawn,          {.v = audioplay } },
+	{ 0,                            XF86XK_AudioNext,           spawn,          {.v = audionext } },
+	{ MODKEY,                       XK_j,                       spawn,          {.v = audioprev } },
+	{ MODKEY,                       XK_k,                       spawn,          {.v = audioplay } },
+	{ MODKEY,                       XK_l,                       spawn,          {.v = audionext } },
+
+	{ 0,                            XF86XK_Explorer,            spawn,          {.v = explorer } },
+	{ 0,                            XF86XK_HomePage,            spawn,          {.v = homepage } },
+	{ 0,                            XF86XK_Mail,                spawn,          {.v = mail } },
+	{ 0,                            XF86XK_Calculator,          spawn,          {.v = calculator } },
+	{ MODKEY,                       XK_f,                       spawn,          {.v = explorer } },
+	{ MODKEY,                       XK_b,                       spawn,          {.v = homepage } },
+	{ MODKEY,                       XK_e,                       spawn,          {.v = mail } },
+
+	{ 0,                            XF86XK_Tools,               spawn,          {.v = tools } },
+	{ 0,                            XF86XK_AudioMute,           spawn,          {.v = audiomute } },
+	{ 0,                            XF86XK_AudioLowerVolume,    spawn,          {.v = audiolowervolume } },
+	{ 0,                            XF86XK_AudioRaiseVolume,    spawn,          {.v = audioraisevolume } },
+	
+	{ 0,                            XK_Print,                   spawn,          {.v = printcis } },
+	{ ControlMask,                  XK_Print,                   spawn,          {.v = printtrans } },
+	{ ShiftMask,                    XK_Print,                   spawn,          {.v = printareacis } },
+	{ ShiftMask|ControlMask,        XK_Print,                   spawn,          {.v = printareatrans } },
+	{ MODKEY,                       XK_Print,                   spawn,          {.v = printgui } },
+
 	{ MODKEY,                       XK_p,                       togglebar,      {0} },
 	{ MODKEY,                       XK_Up,                      rotatestack,    {.i = +1 } },
 	{ MODKEY,                       XK_Down,                    rotatestack,    {.i = -1 } },
@@ -144,19 +179,6 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_period,                  tagmon,         {.i = +1 } },
 	{ MODKEY|ControlMask|ShiftMask, XK_q,                       quit,           {0} },
 	{ MODKEY|ShiftMask,             XK_q,                       quit,           {1} },
-	{ 0,                            XF86XK_AudioLowerVolume,    spawn,          {.v = downvol } },
-	{ 0,                            XF86XK_AudioMute,           spawn,          {.v = mutevol } },
-	{ 0,                            XF86XK_AudioRaiseVolume,    spawn,          {.v = upvol } },
-	{ 0,                            XF86XK_Tools,               spawn,          {.v = music } },
-	{ 0,                            XF86XK_AudioNext,           spawn,          {.v = next } },
-	{ 0,                            XF86XK_AudioPlay,           spawn,          {.v = playpause } },
-	{ 0,                            XF86XK_AudioPrev,           spawn,          {.v = previous } },
-	{ 0,                            XF86XK_AudioStop,           spawn,          {.v = stop } },
-	{ 0,                            XK_Print,                   spawn,          {.v = printcis } },
-	{ ControlMask,                  XK_Print,                   spawn,          {.v = printtrans } },
-	{ ShiftMask,                    XK_Print,                   spawn,          {.v = printareacis } },
-	{ ShiftMask|ControlMask,        XK_Print,                   spawn,          {.v = printareatrans } },
-	{ MODKEY,                       XK_Print,                   spawn,          {.v = printgui } },
 	
 	TAGKEYS(                        XK_1,                                       0)
 	TAGKEYS(                        XK_2,                                       1)
