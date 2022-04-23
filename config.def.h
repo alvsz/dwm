@@ -104,7 +104,7 @@ static const char *homepage[]          = { "firefox", NULL };
 static const char *mail[]              = { "org.gnome.Geary", NULL };
 static const char *calculator[]        = { "io.github.Qalculate", NULL };
 
-static const char *tools[]             = { "dev.alextren.Spot", NULL };
+static const char *tools[]             = { "spot", NULL };
 static const char *audiolowervolume[]  = { "pactl", "set-sink-volume", "0", "-5%",     NULL };
 static const char *audioraisevolume[]  = { "pactl", "set-sink-volume", "0", "+5%",     NULL };
 static const char *audiomute[]         = { "pactl", "set-sink-mute",   "0", "toggle",  NULL };
