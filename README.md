@@ -8,7 +8,7 @@ todos os patches utilizados estão em /patches/
 - Super+v > gerenciador de [área de transferência](https://github.com/cdown/clipmenu)
 - Super+p > habilitar barra superior
 - Super+número da tag
-- - muda a tag ativa
+- - \> muda a tag ativa
 - - +control > habilita mais de uma tag
 - - +shift > envia a janela ativa para outra tag
 - - +shift+control > habilita a janela ativa em mais de uma tag
@@ -28,9 +28,10 @@ todos os patches utilizados estão em /patches/
 - Super+Tab > muda para o próximo tag
 - Alt+tab > muda a janela em foco
 - Super+t > abre o terminal
-- Super+f > abre o nautilus
-- Super+b > abre o firefox
-- Super+e > abre o geary em flatpak
+- Super+f > abre o gerenciador de arquivos
+- Super+b > abre o navegador
+- Super+e > abre o email
+- Super+s > abre o player de m
 - Super+print > abre a interface do gnome-screenshot
 - Print > salva o print da tela em ~/Imagens
 - Control+print > salva o print da tela na área de transferência
@@ -41,8 +42,6 @@ todos os patches utilizados estão em /patches/
 
 ## relevante
 [pywal](https://github.com/dylanaraps/pywal) para as cores do sistema
-- depois de rodar `wal -b suaimagem` remova a penúltima linha de ~.cache/wal/colors-wal-dwm.h para funcionar sem o patch de cores
-
-os controles de som são para pulseaudio e o player de música é [spot](https://aur.archlinux.org/packages/spot-client)
+- depois de rodar `wal -b suaimagem` remover a penúltima linha de ~.cache/wal/colors-wal-dwm.h para funcionar sem o patch de cores
 
 [playerctl](https://github.com/altdesktop/playerctl) para usar os controles de mídia e [mpv-mpris](https://github.com/hoyon/mpv-mpris) para o mpv
