@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+
+signal() {
+    xsetroot -name "fsignal:$*"
+}
+
+case $1 in
+    togglescratch)
+	case $2 in
+	    cmd)
+		signal 1
+		;;
+	    spt|spotify)
+		signal 2
+		;;
+	    cal|calendar)
+		signal 3
+		;;
+	    tray)
+		signal 4
+		;;
+	    *)
+		echo "Unknown command or missing one argument."
+		exit 1
+		;;
+	esac
+	;;
+    *)
+	echo "Unknown command or missing one argument."
+	exit 1
+	;;
+esac
