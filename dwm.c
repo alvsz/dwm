@@ -2596,13 +2596,13 @@ togglefloating(const Arg *arg)
   if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
     return;
   selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
-  if (selmon->sel->isfloating)
+  if (selmon->sel->isfloating) {
     XSetWindowBorder(dpy, selmon->sel->win, scheme[SchemeSel][ColFloat].pixel);
-  else
-    XSetWindowBorder(dpy, selmon->sel->win, scheme[SchemeSel][ColBorder].pixel);
-  if (selmon->sel->isfloating)
     resize(selmon->sel, selmon->sel->x, selmon->sel->y,
 	   selmon->sel->w, selmon->sel->h, 0);
+  }
+  else
+    XSetWindowBorder(dpy, selmon->sel->win, scheme[SchemeSel][ColBorder].pixel);
   arrange(selmon);
 }
 
@@ -2783,10 +2783,17 @@ toggleinscratch(const Arg *arg)
   if (!c)
     return;
 
-  if (c->scratchkey != 0)
+  if (c->scratchkey != 0) {
     c->scratchkey = 0;
-  else
+    if (c->isfloating)
+      XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColFloat].pixel);
+    else
+      XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
+  }
+  else {
     c->scratchkey = ((char**)arg->v)[0][0];
+    XSetWindowBorder(dpy, c->win, scheme[SchemeScratchNorm][ColBorder].pixel);
+  }
 }
 
 void

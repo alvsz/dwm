@@ -45,4 +45,5 @@ static const Rule rules[]       = {
 	{ "PrismLauncher",         NULL,            NULL,                 1 << 5,       1,            0,          0,          -1,     0 },
 	{ "steam_proton",          NULL,            NULL,                 1 << 5,       0,            0,          0,          -1,     0 },
 	{ "epicgameslauncher.exe", NULL,            NULL,                 1 << 5,       0,            0,          0,          -1,     0 },
+	{ "ProtonUp-Qt",           NULL,            NULL,                 1 << 5,       1,            0,          0,          -1,     0 },
 };

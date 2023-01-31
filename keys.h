@@ -8,11 +8,12 @@
 	{ MODKEY,               XK_q,                       killclient,     {0} },
 	  
 	/* ----------- stack ----------- */
-	{ MODKEY,               XK_Up,                      rotatestack,    {.i = +1 } },
-	{ MODKEY,               XK_Down,                    rotatestack,    {.i = -1 } },
+	{ MODKEY,               XK_Up,                      rotatestack,    {.i = -1 } },
+	{ MODKEY,               XK_Down,                    rotatestack,    {.i = +1 } },
 	{ Mod1Mask,             XK_Tab,                     focusstack,     {.i = +1 } },
 	{ MODKEY|ShiftMask,     XK_Up,                      incnmaster,     {.i = +1 } },
 	{ MODKEY|ShiftMask,     XK_Down,                    incnmaster,     {.i = -1 } },
+        { MODKEY,               XK_Return,                  zoom,           {0} },
 
 	/* ----------- resize ---------- */
 	{ MODKEY,               XK_Left,                    setmfact,       {.f = -0.05} },
