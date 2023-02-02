@@ -69,7 +69,7 @@
 	/* ------------ apps ----------- */
 	{ MODKEY,               XK_f,                       spawn,          SHCMD("$EXPLORER") },
 	{ MODKEY,               XK_b,                       spawn,          SHCMD("$BROWSER") },
-	{ MODKEY,               XK_e,                       spawn,          SHCMD("xdg-email") },
+	{ MODKEY,               XK_e,                       spawn,          SHCMD("$MAIL") },
 	{ MODKEY,               XK_m,                       spawn,          SHCMD("rofi -show emoji -emoji-mode copy") },
 	{ MODKEY,               XK_v,                       spawn,          SHCMD("CM_LAUNCHER=rofi clipmenu -i ") },
 	{ 0,                    XF86XK_Calculator,          spawn,          SHCMD("$CALCULATOR") },

@@ -664,9 +664,17 @@ ipc_get_tags(IPCClient *c, const char *tags[], const int tags_len)
   yajl_gen gen;
   ipc_reply_init_message(&gen);
 
-  dump_tags(gen, tags, tags_len);
+  YARR(
+       for (Monitor *mon = mons; mon; mon = mon->next) {
+	 YMAP(
+	      YSTR("monitor"); YINT(mon->num);
+	      YSTR("is_selected"); YBOOL(( mon == selmon ? 1 : 0 ));
+	      YSTR("tags"); dump_tags(gen, tags, tags_len, mon);
+	      )
+       }
+       )
 
-  ipc_reply_prepare_send_message(gen, c, IPC_TYPE_GET_TAGS);
+    ipc_reply_prepare_send_message(gen, c, IPC_TYPE_GET_TAGS);
 }
 
 /**
@@ -897,7 +905,7 @@ ipc_read_client(IPCClient *c, IPCMessageType *msg_type, uint32_t *msg_size,
 {
   int fd = c->fd;
   int ret =
-      ipc_recv_message(fd, (uint8_t *)msg_type, msg_size, (uint8_t **)msg);
+    ipc_recv_message(fd, (uint8_t *)msg_type, msg_size, (uint8_t **)msg);
 
   if (ret < 0) {
     // This will happen if these errors occur while reading header
@@ -964,7 +972,7 @@ ipc_prepare_send_message(IPCClient *c, const IPCMessageType msg_type,
                          const uint32_t msg_size, const char *msg)
 {
   dwm_ipc_header_t header = {
-      .magic = IPC_MAGIC_ARR, .type = msg_type, .size = msg_size};
+    .magic = IPC_MAGIC_ARR, .type = msg_type, .size = msg_size};
 
   uint32_t header_size = sizeof(dwm_ipc_header_t);
   uint32_t packet_size = header_size + msg_size;

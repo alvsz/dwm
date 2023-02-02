@@ -3,30 +3,28 @@
 #include <stdint.h>
 
 int
-dump_tag(yajl_gen gen, const char *name, const int tag_mask)
+dump_tag(yajl_gen gen, const char *name, const int tag_mask, Monitor *mon)
 {
   // clang-format off
-  for (Monitor *mon = mons; mon; mon = mon->next) {
-    YMAP(
+  YMAP(
 	 YSTR("bit_mask"); YINT(tag_mask);
 	 YSTR("name"); YSTR(name);
-	 YSTR("selected"); YINT((mon->tagstate.selected & tag_mask) != 0 ? 1 : 0);
-	 YSTR("occupied"); YINT((mon->tagstate.occupied & tag_mask) != 0 ? 1 : 0);
-	 YSTR("urgent"); YINT((mon->tagstate.urgent & tag_mask) != 0 ? 1 : 0);
-	 )
-      }
-  // clang-format on
+	 YSTR("selected"); YINT( ( mon->tagstate.selected & tag_mask ) != 0 ? 1 : 0 );
+	 YSTR("occupied"); YINT( ( mon->tagstate.occupied & tag_mask ) != 0 ? 1 : 0 );
+	 YSTR("urgent"); YINT( ( mon->tagstate.urgent & tag_mask ) != 0 ? 1 : 0 );
+       )
+    // clang-format on
 
-  return 0;
+    return 0;
 }
 
 int
-dump_tags(yajl_gen gen, const char *tags[], int tags_len)
+dump_tags(yajl_gen gen, const char *tags[], int tags_len, Monitor *mon)
 {
   // clang-format off
   YARR(
-       for (int i = 0; i < tags_len; i++)
-	 dump_tag(gen, tags[i], 1 << i);
+	 for (int i = 0; i < tags_len; i++)
+	   dump_tag(gen, tags[i], 1 << i, mon);
        )
 
     // clang-format on
@@ -178,20 +176,10 @@ dump_monitor(yajl_gen gen, Monitor *mon, int is_selected)
 			 YSTR("window_id"); YINT(mon->barwin);
 			 )
        
-       YSTR("eww_tags"); YARR(
-			      for (int i = 0; i < LENGTH(tags); i++) {
-				YMAP(
-				     YSTR("bit_mask"); YINT( 1 << i );
-				     YSTR("name"); YSTR(tags[i]);
-				     YSTR("selected"); YINT( ((mon->tagstate).selected & ( 1 << i ) ) != 0 ? 1 : 0);
-				     YSTR("occupied"); YINT( ((mon->tagstate).occupied & ( 1 << i ) ) != 0 ? 1 : 0);
-				     YSTR("urgent"); YINT( ((mon->tagstate).urgent & ( 1 << i ) ) != 0 ? 1 : 0);
-				     )
-			      }
-			      )
+       YSTR("eww_tags"); dump_tags(gen, tags, LENGTH(tags), mon);
        
        YSTR("eww_windows"); YARR(
-				 for (Client* c = mon->clients; c; c = c->next) {
+				 for (Client *c = mon->clients; c; c = c->next) {
 				   if ( ( mon->tagset[mon->seltags] & c->tags ) != 0 )
 				     dump_client(gen, c);
 				 }
@@ -208,10 +196,7 @@ dump_monitors(yajl_gen gen, Monitor *mons, Monitor *selmon)
   // clang-format off
   YARR(
        for (Monitor *mon = mons; mon; mon = mon->next) {
-	 if (mon == selmon)
-	   dump_monitor(gen, mon, 1);
-	 else
-	   dump_monitor(gen, mon, 0);
+	   dump_monitor(gen, mon, ( mon == selmon ? 1 : 0 ));
        }
        )
     // clang-format on
@@ -262,17 +247,6 @@ dump_tag_event(yajl_gen gen, int mon_num, TagState old_state,
 				      YSTR("monitor_number"); YINT(mon_num);
 				      YSTR("old_state"); dump_tag_state(gen, old_state);
 				      YSTR("new_state"); dump_tag_state(gen, new_state);
-				      YSTR("eww_tags"); YARR(
-							     for (int i = 0; i < LENGTH(tags); i++) {
-							       YMAP(
-								    YSTR("bit_mask"); YINT( 1 << i );
-								    YSTR("name"); YSTR(tags[i]);
-								    YSTR("selected"); YINT( (new_state.selected & ( 1 << i ) ) != 0 ? 1 : 0);
-								    YSTR("occupied"); YINT( (new_state.occupied & ( 1 << i ) ) != 0 ? 1 : 0);
-								    YSTR("urgent"); YINT( (new_state.urgent & ( 1 << i ) ) != 0 ? 1 : 0);
-								    )
-							     }
-							     )
 				      )
        )
     // clang-format on

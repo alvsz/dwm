@@ -22,9 +22,9 @@
     yajl_gen_map_close(gen);                                                   \
   }
 
-int dump_tag(yajl_gen gen, const char *name, const int tag_mask);
+int dump_tag(yajl_gen gen, const char *name, const int tag_mask, Monitor *m);
 
-int dump_tags(yajl_gen gen, const char *tags[], int tags_len);
+int dump_tags(yajl_gen gen, const char *tags[], int tags_len, Monitor *m);
 
 int dump_client(yajl_gen gen, Client *c);
 

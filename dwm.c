@@ -133,9 +133,9 @@ typedef struct {
 } Key;
 
 typedef struct {
-	unsigned int signum;
-	void (*func)(const Arg *);
-	const Arg arg;
+  unsigned int signum;
+  void (*func)(const Arg *);
+  const Arg arg;
 } Signal;
 
 typedef struct {
@@ -1438,57 +1438,95 @@ keypress(XEvent *e)
 int
 fake_signal(void)
 {
-	char fsignal[256];
-	char indicator[9] = "fsignal:";
-	char str_signum[16];
-	int i, v, signum;
-	size_t len_fsignal, len_indicator = strlen(indicator);
+  char fsignal[256];
+  char indicator[9] = "fsignal:";
+  char str_signum[16];
+  int i, v, signum;
+  size_t len_fsignal, len_indicator = strlen(indicator);
 
-	// Get root name property
-	if (gettextprop(root, XA_WM_NAME, fsignal, sizeof(fsignal))) {
-		len_fsignal = strlen(fsignal);
+  // Get root name property
+  if (gettextprop(root, XA_WM_NAME, fsignal, sizeof(fsignal))) {
+    len_fsignal = strlen(fsignal);
 
-		// Check if this is indeed a fake signal
-		if (len_indicator > len_fsignal ? 0 : strncmp(indicator, fsignal, len_indicator) == 0) {
-			memcpy(str_signum, &fsignal[len_indicator], len_fsignal - len_indicator);
-			str_signum[len_fsignal - len_indicator] = '\0';
+    // Check if this is indeed a fake signal
+    if (len_indicator > len_fsignal ? 0 : strncmp(indicator, fsignal, len_indicator) == 0) {
+      memcpy(str_signum, &fsignal[len_indicator], len_fsignal - len_indicator);
+      str_signum[len_fsignal - len_indicator] = '\0';
 
-			// Convert string value into managable integer
-			for (i = signum = 0; i < strlen(str_signum); i++) {
-				v = str_signum[i] - '0';
-				if (v >= 0 && v <= 9) {
-					signum = signum * 10 + v;
-				}
-			}
-
-			// Check if a signal was found, and if so handle it
-			if (signum)
-				for (i = 0; i < LENGTH(signals); i++)
-					if (signum == signals[i].signum && signals[i].func)
-						signals[i].func(&(signals[i].arg));
-
-			// A fake signal was sent
-			return 1;
-		}
+      // Convert string value into managable integer
+      for (i = signum = 0; i < strlen(str_signum); i++) {
+	v = str_signum[i] - '0';
+	if (v >= 0 && v <= 9) {
+	  signum = signum * 10 + v;
 	}
+      }
 
-	// No fake signal was sent, so proceed with update
-	return 0;
+      // Check if a signal was found, and if so handle it
+      if (signum)
+	for (i = 0; i < LENGTH(signals); i++)
+	  if (signum == signals[i].signum && signals[i].func)
+	    signals[i].func(&(signals[i].arg));
+
+      // A fake signal was sent
+      return 1;
+    }
+  }
+
+  // No fake signal was sent, so proceed with update
+  return 0;
 }
 
 void
 killclient(const Arg *arg)
 {
-  if (!selmon->sel)
+  Client *c;
+
+  if (arg->ui != 0) {
+    for (Monitor *m = mons; m; m = m->next) {
+      for (Client *b = m->clients; b; b = b->next) {
+	if (b->win == arg->ui)
+	  c = b;
+      }
+    }
+  }
+  else
+    c = selmon->sel;
+  
+  if (!c)
     return;
-  if (!sendevent(selmon->sel, wmatom[WMDelete])) {
+  if (!sendevent(c, wmatom[WMDelete])) {
     XGrabServer(dpy);
     XSetErrorHandler(xerrordummy);
     XSetCloseDownMode(dpy, DestroyAll);
-    XKillClient(dpy, selmon->sel->win);
+    XKillClient(dpy, c->win);
     XSync(dpy, False);
     XSetErrorHandler(xerror);
     XUngrabServer(dpy);
+  }
+}
+
+void
+killclientid(const Arg *arg)
+{
+  Client *c;
+  Monitor *m;
+  
+  for (m = mons; m; m = m->next) {
+    for (c = m->clients; c; c = c->next) {
+      if (c->win == arg->ui) {
+	if (!c)
+	  return;
+	if (!sendevent(c, wmatom[WMDelete])) {
+	  XGrabServer(dpy);
+	  XSetErrorHandler(xerrordummy);
+	  XSetCloseDownMode(dpy, DestroyAll);
+	  XKillClient(dpy, c->win);
+	  XSync(dpy, False);
+	  XSetErrorHandler(xerror);
+	  XUngrabServer(dpy);
+	}
+      }
+    }
   }
 }
 
@@ -2596,13 +2634,15 @@ togglefloating(const Arg *arg)
   if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
     return;
   selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
-  if (selmon->sel->isfloating) {
-    XSetWindowBorder(dpy, selmon->sel->win, scheme[SchemeSel][ColFloat].pixel);
-    resize(selmon->sel, selmon->sel->x, selmon->sel->y,
-	   selmon->sel->w, selmon->sel->h, 0);
+  if (selmon->sel->scratchkey == 0) {
+    if (selmon->sel->isfloating) {
+      XSetWindowBorder(dpy, selmon->sel->win, scheme[SchemeSel][ColFloat].pixel);
+      resize(selmon->sel, selmon->sel->x, selmon->sel->y,
+	     selmon->sel->w, selmon->sel->h, 0);
+    }
+    else
+      XSetWindowBorder(dpy, selmon->sel->win, scheme[SchemeSel][ColBorder].pixel);
   }
-  else
-    XSetWindowBorder(dpy, selmon->sel->win, scheme[SchemeSel][ColBorder].pixel);
   arrange(selmon);
 }
 
@@ -2779,6 +2819,7 @@ toggleview(const Arg *arg)
 void
 toggleinscratch(const Arg *arg)
 {
+  system("notify-send teste");
   Client *c = selmon->sel;
   if (!c)
     return;
@@ -2792,7 +2833,7 @@ toggleinscratch(const Arg *arg)
   }
   else {
     c->scratchkey = ((char**)arg->v)[0][0];
-    XSetWindowBorder(dpy, c->win, scheme[SchemeScratchNorm][ColBorder].pixel);
+    XSetWindowBorder(dpy, c->win, scheme[SchemeScratchSel][ColBorder].pixel);
   }
 }
 
@@ -3087,7 +3128,7 @@ updatetitle(Client *c)
     strcpy(c->name, broken);
 
   for (Monitor *m = mons; m; m = m->next) {
-    if (m->sel == c && strcmp(oldname, c->name) != 0)
+    if (strcmp(oldname, c->name) != 0)
       ipc_focused_title_change_event(m->num, c->win, oldname, c->name);
   }
 }
@@ -3394,7 +3435,18 @@ xerrorstart(Display *dpy, XErrorEvent *ee)
 void
 zoom(const Arg *arg)
 {
-  Client *c = selmon->sel;
+  Client *c;
+  
+  if (arg->ui != 0) {
+    for (Monitor *m = mons; m; m = m->next) {
+      for (Client *b = m->clients; b; b = b->next) {
+	if (b->win == arg->ui)
+	  c = b;
+      }
+    }
+  }
+  else
+    c = selmon->sel;
 
   if (!selmon->lt[selmon->sellt]->arrange || !c || c->isfloating)
     return;
