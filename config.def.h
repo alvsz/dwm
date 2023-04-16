@@ -17,7 +17,8 @@ static       int smartgaps          = 0;         /* 1 means no outer gap when th
 static const int showbar            = 1;         /* 0 means no bar */
 static const int topbar             = 1;         /* 0 means bottom bar */
 static const int usealtbar          = 1;         /* 1 means use non-dwm status bar */
-static const char *altbarclass      = "eww-bar"; /* Alternate bar class name */
+static const char *altbarclass      = "eww-bar";      /* Alternate bar class name */
+// static const char *altbartitle      = "Eww - bar";    /* Alternate bar title name */
 static const char *altbarcmd        = "$XDG_CONFIG_HOME/dwm/bar.sh"; /* Alternate bar launch command */
 
 /* ------------- colorscheme ------------- */
@@ -38,7 +39,7 @@ static const char *tags[]       = { "", "爵", "", "", "", "", "�
 #define CLASS_SP                "ScratchPad"
 #define TITLE_SP                "scratchpad"
 
-#include "/home/mamba/.config/dwm/rules.h"
+#include "rules.h"
 
 /* layout(s) */
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
@@ -77,14 +78,16 @@ static const Layout layouts[] = {
   { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* commands */
+static const char *roficmd[] = { "rofi", "-show", "drun", NULL };
 static const char *termcmd[] = { APP_TERM, NULL };
 static const char *tabterm[] = { "tabbed", "-n", "terminal", "-c", "-k", "-r 2", APP_TERM, "--embed", "''", NULL };
 
 /* first arg only serves to match against key in rules */
 static const char *scratchcmd[] = { "t", APP_TERM, "--class", CLASS_SP, "-t", TITLE_SP, NULL };
 static const char *scratchspt[] = { "s", APP_TERM, "--class", CLASS_SP, "-t", "spotify", "-e", "spt", NULL };
-static const char *scratchcal[] = { "c", APP_TERM, "--class", CLASS_SP, "-t", "calendar", "-e", "calcurse", NULL };
-static const char *scratchtry[] = { "a", "stalonetray", NULL };
+// static const char *scratchcal[] = { "c", APP_TERM, "--class", CLASS_SP, "-t", "calendar", "-e", "calcurse", NULL };
+static const char *scratchcal[] = { "c", "eww", "open", "pwcalc", NULL };
+// static const char *scratchtry[] = { "a", "stalonetray", NULL };
 
 #include <X11/XF86keysym.h>
 
@@ -92,7 +95,7 @@ static const char *scratchtry[] = { "a", "stalonetray", NULL };
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 static const Key keys[] = {
-#include "/home/mamba/.config/dwm/keys.h"
+#include "keys.h"
   /* modifier                     key          function        argument */
   { MODKEY|ShiftMask,             XK_Tab,      view,           {0} },
 	
@@ -102,14 +105,14 @@ static const Key keys[] = {
   { MODKEY|ShiftMask,             XK_space,    setlayout,      {.v = &layouts[1] } }, /* floating */
 	
   /* ------------ bar ------------ */
-  { MODKEY,                       XK_p,       spawn,      SHCMD("eww windows | grep -o '*bar' && eww close bar || eww open bar") },
+  { MODKEY,                       XK_p,       spawn,              SHCMD("eww open bar --toggle") },
 	
   /* --------- scratchpad -------- */
   { MODKEY|ControlMask,           XK_x,        toggleinscratch,   {.v = scratchcmd } },
   { MODKEY,                       XK_x,        togglescratch,     {.v = scratchcmd } },
   { MODKEY,                       XK_s,        togglescratch,     {.v = scratchspt } },
   { MODKEY,                       XK_w,        togglescratch,     {.v = scratchcal } },
-  { MODKEY|ShiftMask,             XK_t,        togglescratch,     {.v = scratchtry } },
+  // { MODKEY|ShiftMask,             XK_t,        togglescratch,     {.v = scratchtry } },
 
   { MODKEY,                       XK_Tab,      viewnext,       {0} },
   { MODKEY|ShiftMask,             XK_Right,    tagtonext,      {0} },
@@ -135,12 +138,13 @@ static const Button buttons[] = {
 	
   { ClkClientWin,         MODKEY,             Button1,        movemouse,       {0} },
   { ClkClientWin,         MODKEY,             Button3,        togglefloating,  {0} },
-  { ClkClientWin,         MODKEY|ControlMask, Button1,        toggleinscratch, {.v = scratchcmd } },
+  { ClkClientWin,         MODKEY,             8,              toggleinscratch, {.v = scratchcmd } },
   { ClkClientWin,         MODKEY,             Button2,        resizemouse,     {0} },
   { ClkClientWin,         MODKEY|ShiftMask,   Button1,        dragmfact,       {0} },
   { ClkClientWin,         MODKEY,             Button4,        incnmaster,      {.i = +1 } },
   { ClkClientWin,         MODKEY,             Button5,        incnmaster,      {.i = -1 } },
-  { ClkRootWin,           0,                  Button3,        spawn,           SHCMD("eww open-many calendar dashboard") },
+  { ClkRootWin,           0,                  Button3,        spawn,           SHCMD("jgmenu_run") },
+  { ClkRootWin,           0,                  8,              spawn,           {.v = roficmd } },
 	
   { ClkTagBar,            0,                  Button1,        view,            {0} },
   { ClkTagBar,            0,                  Button3,        toggleview,      {0} },
@@ -156,7 +160,7 @@ static Signal signals[] = {
   { 1,            togglescratch,  {.v = scratchcmd } },
   { 2,            togglescratch,  {.v = scratchspt } },
   { 3,            togglescratch,  {.v = scratchcal } },
-  { 4,            togglescratch,  {.v = scratchtry } },
+  // { 4,            togglescratch,  {.v = scratchtry } },
 };
 
 static const char *ipcsockpath = "/tmp/dwm.sock";
